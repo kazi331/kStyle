@@ -19,6 +19,7 @@ type BagItem = {
 
 type BagContextValue = {
   count: number;
+  bump: number;
   open: boolean;
   add: (item: BagItem) => void;
   show: () => void;
@@ -30,6 +31,7 @@ const BagContext = createContext<BagContextValue | null>(null);
 export function BagProvider({ children }: { children: React.ReactNode }) {
   const [lines, setLines] = useState<BagLine[]>([]);
   const [open, setOpen] = useState(false);
+  const [bump, setBump] = useState(0);
   const count = lines.reduce((total, line) => total + line.quantity, 0);
 
   function add(item: BagItem) {
@@ -46,7 +48,7 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
           : line,
       );
     });
-    setOpen(true);
+    setBump((value) => value + 1);
   }
 
   function setQuantity(slug: string, size: string, quantity: number) {
@@ -60,7 +62,9 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <BagContext.Provider value={{ count, open, add, show: () => setOpen(true), hide: () => setOpen(false) }}>
+    <BagContext.Provider
+      value={{ count, bump, open, add, show: () => setOpen(true), hide: () => setOpen(false) }}
+    >
       {children}
       <BagDrawer lines={lines} open={open} onClose={() => setOpen(false)} onQuantity={setQuantity} />
     </BagContext.Provider>

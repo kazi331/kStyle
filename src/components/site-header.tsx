@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useBag } from "@/components/bag";
 import { MenuIcon } from "@/components/icons";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const links = [
   { href: "/#drop", label: "01 New in" },
@@ -12,7 +12,7 @@ const links = [
 ] as const;
 
 export function SiteHeader() {
-  const { count, open: bagOpen, show: showBag, hide: hideBag } = useBag();
+  const { count, bump, open: bagOpen, show: showBag, hide: hideBag } = useBag();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -66,8 +66,14 @@ export function SiteHeader() {
           onClick={() => (bagOpen ? hideBag() : showBag())}
         >
           Bag
-          <span className="bg-accent px-[7px] py-px text-white min-[861px]:px-2 min-[861px]:py-0.5">
-            {count}
+          <span className="relative inline-flex">
+            {bump > 0 ? <span key={bump} aria-hidden="true" className="bag-bubble" /> : null}
+            <span
+              key={`count-${bump}`}
+              className={`bg-accent px-[7px] py-px text-white min-[861px]:px-2 min-[861px]:py-0.5 ${bump > 0 ? "bag-pop" : ""}`}
+            >
+              {count}
+            </span>
           </span>
         </button>
       </header>
