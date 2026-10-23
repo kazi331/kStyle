@@ -174,6 +174,14 @@ export function collectionPath(category: string) {
   return "/collections/hoodies" as const;
 }
 
+export const freeDeliveryMinimum = 5000;
+export const standardDeliveryFee = 150;
+
+export function deliveryCharge(subtotal: number) {
+  if (subtotal <= 0 || subtotal >= freeDeliveryMinimum) return 0;
+  return standardDeliveryFee;
+}
+
 export function formatPrice(price: number) {
   return `৳${price.toLocaleString("en-US")}`;
 }

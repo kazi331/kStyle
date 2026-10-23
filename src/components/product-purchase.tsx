@@ -11,13 +11,22 @@ import {
   type Product,
 } from "@/lib/catalog";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function ProductPurchase({ product }: { product: Product }) {
   const { add } = useBag();
   const [view, setView] = useState(0);
   const [size, setSize] = useState<string>("M");
   const [guideOpen, setGuideOpen] = useState(false);
+  const [addedTick, setAddedTick] = useState(0);
+  const added = addedTick > 0;
+
+  useEffect(() => {
+    if (addedTick === 0) return;
+
+    const timeout = window.setTimeout(() => setAddedTick(0), 1600);
+    return () => window.clearTimeout(timeout);
+  }, [addedTick]);
   const active = galleryViews[view] ?? galleryViews[0];
 
   return (
@@ -146,10 +155,13 @@ export function ProductPurchase({ product }: { product: Product }) {
 
         <button
           type="button"
-          onClick={() => add({ slug: product.slug, size })}
+          onClick={() => {
+            add({ slug: product.slug, size });
+            setAddedTick((tick) => tick + 1);
+          }}
           className="mt-8 flex min-h-[60px] w-full cursor-pointer items-center justify-between border-0 bg-accent px-6 py-5 text-[15px] font-extrabold tracking-[0.14em] text-white uppercase"
         >
-          <span>Add to bag</span>
+          <span>{added ? `Added — size ${size}` : "Add to bag"}</span>
           <ArrowIcon className="size-[22px]" />
         </button>
 

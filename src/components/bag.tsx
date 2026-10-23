@@ -2,9 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
-import { CloseIcon } from "@/components/icons";
-import { formatPrice, getProduct } from "@/lib/catalog";
+import { ArrowIcon, CloseIcon } from "@/components/icons";
+import {
+  deliveryCharge,
+  formatPrice,
+  freeDeliveryMinimum,
+  getProduct,
+} from "@/lib/catalog";
+
+const bagKey = "kstyle-bag";
 
 type BagLine = {
   slug: string;
@@ -21,18 +29,60 @@ type BagContextValue = {
   count: number;
   bump: number;
   open: boolean;
+  ready: boolean;
+  lines: BagLine[];
   add: (item: BagItem) => void;
+  setQuantity: (slug: string, size: string, quantity: number) => void;
+  clear: () => void;
   show: () => void;
   hide: () => void;
 };
 
 const BagContext = createContext<BagContextValue | null>(null);
 
+function readBag(): BagLine[] {
+  const raw = sessionStorage.getItem(bagKey);
+  if (!raw) return [];
+
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(isBagLine);
+  } catch {
+    return [];
+  }
+}
+
+function isBagLine(value: unknown): value is BagLine {
+  if (!value || typeof value !== "object") return false;
+
+  const line = value as BagLine;
+  return (
+    typeof line.slug === "string" &&
+    typeof line.size === "string" &&
+    typeof line.quantity === "number" &&
+    Number.isInteger(line.quantity) &&
+    line.quantity > 0 &&
+    Boolean(getProduct(line.slug))
+  );
+}
+
 export function BagProvider({ children }: { children: React.ReactNode }) {
   const [lines, setLines] = useState<BagLine[]>([]);
+  const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
   const [bump, setBump] = useState(0);
   const count = lines.reduce((total, line) => total + line.quantity, 0);
+
+  useEffect(() => {
+    setLines(readBag());
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    sessionStorage.setItem(bagKey, JSON.stringify(lines));
+  }, [lines, ready]);
 
   function add(item: BagItem) {
     setLines((current) => {
@@ -63,7 +113,18 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <BagContext.Provider
-      value={{ count, bump, open, add, show: () => setOpen(true), hide: () => setOpen(false) }}
+      value={{
+        count,
+        bump,
+        open,
+        ready,
+        lines,
+        add,
+        setQuantity,
+        clear: () => setLines([]),
+        show: () => setOpen(true),
+        hide: () => setOpen(false),
+      }}
     >
       {children}
       <BagDrawer lines={lines} open={open} onClose={() => setOpen(false)} onQuantity={setQuantity} />
@@ -94,6 +155,7 @@ function BagDrawer({
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+  const router = useRouter();
   const items = lines.flatMap((line) => {
     const product = getProduct(line.slug);
     return product ? [{ ...line, product }] : [];
@@ -102,6 +164,8 @@ function BagDrawer({
     (total, line) => total + line.product.price * line.quantity,
     0,
   );
+  const delivery = deliveryCharge(subtotal);
+  const total = subtotal + delivery;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -232,13 +296,45 @@ function BagDrawer({
               ))}
             </ul>
             <div className="border-t-2 border-ink px-8 py-5">
-              <div className="flex items-center justify-between text-[15px] font-extrabold tracking-[0.08em] uppercase">
+              <div className="flex items-center justify-between text-sm font-bold tracking-[0.08em] uppercase">
                 <span>Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
+              <div className="mt-2 flex items-center justify-between text-sm font-bold tracking-[0.08em] uppercase">
+                <span>Delivery</span>
+                <span>{delivery === 0 ? "Free" : formatPrice(delivery)}</span>
+              </div>
+              <div className="mt-3 flex items-center justify-between border-t-2 border-ink pt-3 text-[15px] font-extrabold tracking-[0.08em] uppercase">
+                <span>Total</span>
+                <span>{formatPrice(total)}</span>
+              </div>
               <p className="mt-2 mb-0 text-sm text-muted">
-                Delivery is free over ৳5,000.
+                {delivery === 0
+                  ? "Delivery is free on this order."
+                  : `Free delivery over ${formatPrice(freeDeliveryMinimum)}.`}
               </p>
+              <Link
+                href="/checkout"
+                onClick={(event) => {
+                  if (
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey ||
+                    event.button !== 0
+                  ) {
+                    return;
+                  }
+
+                  event.preventDefault();
+                  onClose();
+                  window.setTimeout(() => router.push("/checkout"), 0);
+                }}
+                className="mt-4 flex min-h-12 items-center justify-between bg-accent px-5 text-[13px] font-extrabold tracking-[0.14em] text-white uppercase"
+              >
+                Checkout
+                <ArrowIcon className="size-[18px]" />
+              </Link>
             </div>
           </>
         )}

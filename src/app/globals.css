@@ -26,13 +26,17 @@
   }
 
   button,
-  input {
+  input,
+  textarea,
+  select {
     font-family: inherit;
   }
 
   a:focus-visible,
   button:focus-visible,
-  input:focus-visible {
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
     outline: 3px solid var(--color-accent);
     outline-offset: 3px;
   }

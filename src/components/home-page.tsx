@@ -1,11 +1,11 @@
-import Image from "next/image";
-import Link from "next/link";
 import { ArrowIcon } from "@/components/icons";
 import { Newsletter } from "@/components/newsletter";
 import { ProductCard } from "@/components/product-card";
 import { SiteHeader } from "@/components/site-header";
 import { Ticker } from "@/components/ticker";
 import { formatPrice, products } from "@/lib/catalog";
+import Image from "next/image";
+import Link from "next/link";
 
 const winterTicker =
   "Winter collection ✦ New drops ✦ Hoodies ✦ Jackets ✦ Sweatshirts ✦ Winter collection ✦ New drops ✦ Hoodies ✦ Jackets ✦ Sweatshirts ✦ ";
@@ -113,10 +113,10 @@ export function HomePage() {
 
         <section
           id="drop"
-          className="scroll-mt-6 bg-ink px-4 pt-12 pb-10 text-paper min-[861px]:px-8 min-[861px]:py-[88px]"
+          className="scroll-mt-[calc(var(--header-height,5rem)+1.5rem)] bg-ink px-4 pt-12 pb-10 text-paper min-[861px]:px-8 min-[861px]:py-[88px]"
         >
           <div className="flex items-end justify-between gap-3 border-b-2 border-paper pb-3 min-[861px]:pb-4">
-            <h2 className="cd display-xl m-0">The drop</h2>
+            <h2 className="cd display-xl m-0">The drop<span className="text-accent">.</span></h2>
             <span className="cd text-[28px] text-steel min-[861px]:text-[40px]">
               (04)
             </span>
@@ -136,7 +136,7 @@ export function HomePage() {
           </p>
         </section>
 
-        <section id="cats" className="scroll-mt-6 px-4 pt-12 min-[861px]:px-8 min-[861px]:pt-[88px]">
+        <section id="cats" className="scroll-mt-[calc(var(--header-height,5rem)+1.5rem)] px-4 pt-12 min-[861px]:px-8 min-[861px]:pt-[88px]">
           <h2 className="cd display-xl m-0 mb-5 min-[861px]:mb-7">
             Shop by <span className="text-accent">type</span>
           </h2>
@@ -226,7 +226,7 @@ export function HomePage() {
 
         <section
           id="about"
-          className="scroll-mt-6 grid grid-cols-1 items-start px-4 py-12 min-[861px]:grid-cols-[repeat(auto-fit,minmax(280px,1fr))] min-[861px]:gap-10 min-[861px]:px-8 min-[861px]:py-[88px]"
+          className="scroll-mt-[calc(var(--header-height,5rem)+1.5rem)] grid grid-cols-1 items-start px-4 py-12 min-[861px]:grid-cols-[repeat(auto-fit,minmax(280px,1fr))] min-[861px]:gap-10 min-[861px]:px-8 min-[861px]:py-[88px]"
         >
           <div>
             <div className="stripe h-[22px] w-[120px] min-[861px]:h-7 min-[861px]:w-40" />
@@ -238,9 +238,8 @@ export function HomePage() {
             {about.map((item, index) => (
               <div
                 key={item.index}
-                className={`flex gap-4 border-t-2 border-ink py-4 min-[861px]:gap-5 min-[861px]:py-5 ${
-                  index === about.length - 1 ? "border-b-2" : ""
-                }`}
+                className={`flex gap-4 border-t-2 border-ink py-4 min-[861px]:gap-5 min-[861px]:py-5 ${index === about.length - 1 ? "border-b-2" : ""
+                  }`}
               >
                 <span className="cd text-[30px] text-accent min-[861px]:text-[32px]">
                   {item.index}
