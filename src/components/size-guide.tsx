@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { CloseIcon } from "@/components/icons";
 import { sizeChart } from "@/lib/catalog";
 
@@ -29,34 +28,62 @@ function formatMeasure(cm: number, unit: "cm" | "in") {
 }
 
 export function SizeGuide({
+  open,
+  onClose,
   productName,
   category,
-  closeHref,
 }: {
+  open: boolean;
+  onClose: () => void;
   productName: string;
   category: string;
-  closeHref: string;
 }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   const [unit, setUnit] = useState<"cm" | "in">("cm");
   const piece = category === "Sweatshirts" ? "sweatshirt" : "hoodie";
 
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (open) {
+      if (!dialog.open) dialog.showModal();
+      return;
+    }
+
+    if (dialog.open) dialog.close();
+  }, [open]);
+
   return (
-    <div className="relative mx-auto box-border w-full max-w-[760px] overflow-hidden bg-canvas px-6 py-8 text-ink min-[861px]:px-10 min-[861px]:py-10">
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={titleId}
+      onClose={onClose}
+      onClick={(event) => {
+        if (event.target === dialogRef.current) onClose();
+      }}
+      className="m-auto max-h-[calc(100dvh-2rem)] w-[min(760px,calc(100vw-1.5rem))] overflow-y-auto border-0 bg-transparent p-0 text-ink backdrop:bg-ink/70"
+    >
+    <div className="relative box-border w-full overflow-hidden bg-canvas px-6 py-8 min-[861px]:px-10 min-[861px]:py-10">
       <div className="stripe absolute inset-y-0 right-0 w-5" />
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="text-xs font-bold tracking-[0.16em] text-muted uppercase">
             {productName}
           </div>
-          <h1 className="cd size-title mt-1.5 mb-0">Size guide</h1>
+          <h2 id={titleId} className="cd size-title mt-1.5 mb-0">
+            Size guide
+          </h2>
         </div>
-        <Link
-          href={closeHref}
+        <button
+          type="button"
           aria-label="Close size guide"
-          className="mr-3 flex size-12 shrink-0 items-center justify-center border-2 border-ink"
+          onClick={onClose}
+          className="mr-3 flex size-12 shrink-0 cursor-pointer items-center justify-center border-2 border-ink bg-transparent"
         >
           <CloseIcon />
-        </Link>
+        </button>
       </div>
 
       <div className="mt-7 flex w-[200px]">
@@ -145,5 +172,6 @@ export function SizeGuide({
         usual size for an easy fit, or size down for a closer one.
       </div>
     </div>
+    </dialog>
   );
 }

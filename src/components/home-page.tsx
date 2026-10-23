@@ -65,7 +65,7 @@ export function HomePage() {
                 looks for a generation that dresses to be seen.
               </p>
               <Link
-                href="/#drop"
+                href="/collections/winter"
                 className="mt-5 flex min-h-14 items-center justify-between bg-accent px-5 py-[18px] text-sm font-extrabold tracking-[0.12em] text-white uppercase min-[861px]:mt-7 min-[861px]:inline-flex min-[861px]:min-h-0 min-[861px]:justify-start min-[861px]:gap-3.5 min-[861px]:px-7"
               >
                 Shop the drop
@@ -142,7 +142,7 @@ export function HomePage() {
           </h2>
           <div className="grid grid-cols-2 gap-2.5 min-[861px]:hidden">
             <CategoryTile
-              href={`/products/${textured.slug}`}
+              href="/collections/hoodies"
               image={textured.image}
               alt="Hoodies"
               title="Hoodies"
@@ -151,7 +151,7 @@ export function HomePage() {
               captionClassName="px-3.5 pt-6 pb-3"
             />
             <CategoryTile
-              href={`/products/${graphic.slug}`}
+              href="/collections/sweatshirts"
               image={graphic.image}
               alt="Sweatshirts"
               title="Sweats"
@@ -160,7 +160,7 @@ export function HomePage() {
               captionClassName="px-3 pt-6 pb-2.5"
             />
             <Link
-              href="/#cats"
+              href="/collections/jackets"
               className="relative block h-[200px] overflow-hidden bg-ink text-white"
             >
               <div className="stripe-light absolute inset-0 opacity-[0.14]" />
@@ -174,7 +174,7 @@ export function HomePage() {
           </div>
           <div className="hidden min-[861px]:grid min-[861px]:grid-cols-[1.3fr_1fr_1fr] min-[861px]:grid-rows-[340px_340px] min-[861px]:gap-4">
             <CategoryTile
-              href={`/products/${textured.slug}`}
+              href="/collections/hoodies"
               image={textured.image}
               alt="Hoodies"
               title="Hoodies"
@@ -184,7 +184,7 @@ export function HomePage() {
               captionClassName="p-5"
             />
             <CategoryTile
-              href={`/products/${graphic.slug}`}
+              href="/collections/sweatshirts"
               image={graphic.image}
               alt="Sweatshirts"
               title="Sweatshirts"
@@ -195,7 +195,7 @@ export function HomePage() {
               imageClassName="object-[center_30%]"
             />
             <Link
-              href="/#cats"
+              href="/collections/jackets"
               className="relative block overflow-hidden bg-ink text-white"
             >
               <div className="stripe-light absolute inset-0 opacity-[0.14]" />
@@ -207,7 +207,7 @@ export function HomePage() {
               </div>
             </Link>
             <Link
-              href={`/products/${stripe.slug}`}
+              href="/collections/zips"
               className="group relative block overflow-hidden bg-mist"
             >
               <Image

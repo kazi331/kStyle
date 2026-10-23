@@ -7,12 +7,12 @@ import { MenuIcon } from "@/components/icons";
 
 const links = [
   { href: "/#drop", label: "01 New in" },
-  { href: "/#cats", label: "02 Shop" },
+  { href: "/collections/winter", label: "02 Shop" },
   { href: "/#about", label: "03 Brand" },
 ] as const;
 
 export function SiteHeader() {
-  const { count } = useBag();
+  const { count, open: bagOpen, show: showBag, hide: hideBag } = useBag();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -61,6 +61,9 @@ export function SiteHeader() {
           type="button"
           className="flex min-h-11 cursor-pointer items-center gap-1.5 border-0 bg-ink px-3.5 text-xs font-bold tracking-[0.1em] text-paper uppercase min-[861px]:gap-2.5 min-[861px]:px-5 min-[861px]:text-[13px]"
           aria-label={`Bag, ${count} ${count === 1 ? "item" : "items"}`}
+          aria-expanded={bagOpen}
+          aria-controls="bag"
+          onClick={() => (bagOpen ? hideBag() : showBag())}
         >
           Bag
           <span className="bg-accent px-[7px] py-px text-white min-[861px]:px-2 min-[861px]:py-0.5">

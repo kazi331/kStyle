@@ -94,8 +94,84 @@ export const galleryViews = [
   { label: "Pocket and hem detail", origin: "50% 78%", scale: 2.6 },
 ] as const;
 
+export const collections = [
+  {
+    slug: "winter",
+    name: "Winter collection",
+    navLabel: "Winter",
+    eyebrow: "FW—26 / Menswear",
+    description:
+      "Premium-grade hoodies, jackets and more. Modern cuts and unique looks for a generation that dresses to be seen.",
+    comingSoon: false,
+    productSlugs: [
+      "stripe-track-zip-hoodie",
+      "gs-raw-colour-block-hoodie",
+      "textured-pullover-hoodie",
+      "graphic-drop-shoulder-sweatshirt",
+    ],
+  },
+  {
+    slug: "hoodies",
+    name: "Hoodies",
+    navLabel: "Hoodies",
+    eyebrow: "Shop by type",
+    description: "Pullovers and zips.",
+    comingSoon: false,
+    productSlugs: [
+      "stripe-track-zip-hoodie",
+      "gs-raw-colour-block-hoodie",
+      "textured-pullover-hoodie",
+    ],
+  },
+  {
+    slug: "sweatshirts",
+    name: "Sweatshirts",
+    navLabel: "Sweatshirts",
+    eyebrow: "Shop by type",
+    description: "Relaxed fits, bold graphics.",
+    comingSoon: false,
+    productSlugs: ["graphic-drop-shoulder-sweatshirt"],
+  },
+  {
+    slug: "zips",
+    name: "Zips",
+    navLabel: "Zips",
+    eyebrow: "Shop by type",
+    description: "Zip hoodies with a clean track cut.",
+    comingSoon: false,
+    productSlugs: ["stripe-track-zip-hoodie"],
+  },
+  {
+    slug: "jackets",
+    name: "Jackets",
+    navLabel: "Jackets",
+    eyebrow: "Shop by type",
+    description: "Outerwear lands next season.",
+    comingSoon: true,
+    productSlugs: [],
+  },
+] as const;
+
+export type Collection = (typeof collections)[number];
+
 export function getProduct(slug: string) {
   return products.find((product) => product.slug === slug);
+}
+
+export function getCollection(slug: string) {
+  return collections.find((collection) => collection.slug === slug);
+}
+
+export function collectionProducts(collection: Collection) {
+  return collection.productSlugs.flatMap((slug) => {
+    const product = getProduct(slug);
+    return product ? [product] : [];
+  });
+}
+
+export function collectionPath(category: string) {
+  if (category === "Sweatshirts") return "/collections/sweatshirts" as const;
+  return "/collections/hoodies" as const;
 }
 
 export function formatPrice(price: number) {

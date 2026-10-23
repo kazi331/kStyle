@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { ProductCard } from "@/components/product-card";
 import { ProductPurchase } from "@/components/product-purchase";
 import { SiteHeader } from "@/components/site-header";
-import { getProduct, products } from "@/lib/catalog";
+import { collectionPath, getProduct, products } from "@/lib/catalog";
 
 type ProductRouteProps = {
   params: Promise<{ slug: string }>;
@@ -53,7 +53,7 @@ async function ProductDetails({ params }: ProductRouteProps) {
             Home
           </Link>
           {" / "}
-          <Link href="/#cats" className="hover:text-accent">
+          <Link href={collectionPath(product.category)} className="hover:text-accent">
             {product.category}
           </Link>
           {" / "}

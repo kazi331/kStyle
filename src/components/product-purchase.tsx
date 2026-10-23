@@ -1,10 +1,8 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
 import { useBag } from "@/components/bag";
 import { ArrowIcon } from "@/components/icons";
+import { SizeGuide } from "@/components/size-guide";
 import {
   formatPrice,
   galleryViews,
@@ -12,11 +10,14 @@ import {
   specs,
   type Product,
 } from "@/lib/catalog";
+import Image from "next/image";
+import { useState } from "react";
 
 export function ProductPurchase({ product }: { product: Product }) {
   const { add } = useBag();
   const [view, setView] = useState(0);
   const [size, setSize] = useState<string>("M");
+  const [guideOpen, setGuideOpen] = useState(false);
   const active = galleryViews[view] ?? galleryViews[0];
 
   return (
@@ -30,9 +31,8 @@ export function ProductPurchase({ product }: { product: Product }) {
               aria-label={item.label}
               aria-pressed={view === index}
               onClick={() => setView(index)}
-              className={`relative size-[76px] shrink-0 cursor-pointer overflow-hidden border-2 bg-mist p-0 ${
-                view === index ? "border-ink" : "border-transparent hover:border-ink"
-              }`}
+              className={`relative size-[76px] shrink-0 cursor-pointer overflow-hidden border-2 bg-mist p-0 ${view === index ? "border-ink" : "border-transparent hover:border-ink"
+                }`}
             >
               <span className="sr-only">{item.label}</span>
               <span
@@ -60,7 +60,7 @@ export function ProductPurchase({ product }: { product: Product }) {
         <div className="relative order-1 overflow-hidden bg-mist min-[861px]:order-2">
           <div className="relative aspect-[4/5] overflow-hidden">
             <div
-              className="absolute inset-0 transition-transform duration-500"
+              className="absolute inset-0 transition-[scale, transform] duration-500"
               style={{
                 transform: active.scale === 1 ? undefined : `scale(${active.scale})`,
                 transformOrigin: active.origin,
@@ -116,9 +116,13 @@ export function ProductPurchase({ product }: { product: Product }) {
 
         <div className="mt-7 flex justify-between text-[13px] font-extrabold tracking-[0.12em] uppercase">
           <span>Size</span>
-          <Link href={`/products/${product.slug}/size-guide`} className="underline">
+          <button
+            type="button"
+            className="cursor-pointer border-0 bg-transparent p-0 font-extrabold tracking-[0.12em] uppercase underline"
+            onClick={() => setGuideOpen(true)}
+          >
             Size guide
-          </Link>
+          </button>
         </div>
         <div className="mt-3 flex flex-wrap gap-2.5">
           {sizeChart.map((row) => {
@@ -129,11 +133,10 @@ export function ProductPurchase({ product }: { product: Product }) {
                 type="button"
                 aria-pressed={selected}
                 onClick={() => setSize(row.size)}
-                className={`min-h-12 min-w-14 cursor-pointer border-2 border-ink text-[15px] font-extrabold ${
-                  selected
-                    ? "bg-ink text-paper"
-                    : "bg-transparent text-ink hover:bg-ink hover:text-paper"
-                }`}
+                className={`min-h-12 min-w-14 cursor-pointer border-2 border-ink text-[15px] font-extrabold ${selected
+                  ? "bg-ink text-paper"
+                  : "bg-transparent text-ink hover:bg-ink hover:text-paper"
+                  }`}
               >
                 {row.size}
               </button>
@@ -143,7 +146,7 @@ export function ProductPurchase({ product }: { product: Product }) {
 
         <button
           type="button"
-          onClick={add}
+          onClick={() => add({ slug: product.slug, size })}
           className="mt-8 flex min-h-[60px] w-full cursor-pointer items-center justify-between border-0 bg-accent px-6 py-5 text-[15px] font-extrabold tracking-[0.14em] text-white uppercase"
         >
           <span>Add to bag</span>
@@ -163,6 +166,12 @@ export function ProductPurchase({ product }: { product: Product }) {
           ))}
         </div>
       </div>
+      <SizeGuide
+        open={guideOpen}
+        onClose={() => setGuideOpen(false)}
+        productName={product.name}
+        category={product.category}
+      />
     </section>
   );
 }
