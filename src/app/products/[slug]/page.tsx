@@ -47,29 +47,29 @@ async function ProductDetails({ params }: ProductRouteProps) {
   const related = products.filter((item) => item.slug !== product.slug);
 
   return (
-      <main>
-        <p className="px-8 pt-2 pb-5 text-xs font-bold tracking-[0.14em] text-muted uppercase">
-          <Link href="/" className="hover:text-accent">
-            Home
-          </Link>
-          {" / "}
-          <Link href={collectionPath(product.category)} className="hover:text-accent">
-            {product.category}
-          </Link>
-          {" / "}
-          <span className="text-ink">{product.crumb}</span>
-        </p>
-        <ProductPurchase product={product} />
-        <section className="bg-ink px-8 py-[72px] text-paper">
-          <h2 className="cd related-title m-0 border-b-2 border-paper pb-4">
-            More from the drop
-          </h2>
-          <div className="mt-7 grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5">
-            {related.map((item) => (
-              <ProductCard key={item.slug} product={item} />
-            ))}
-          </div>
-        </section>
-      </main>
+    <main>
+      <p className="px-8 pt-2 pb-5 text-xs font-bold tracking-[0.14em] text-muted uppercase">
+        <Link href="/" className="hover:text-accent">
+          Home
+        </Link>
+        {" / "}
+        <Link href={collectionPath(product.category)} className="hover:text-accent">
+          {product.category}
+        </Link>
+        {" / "}
+        <span className="text-ink">{product.crumb}</span>
+      </p>
+      <ProductPurchase product={product} />
+      <section className="bg-ink px-8 py-[72px] text-paper">
+        <h2 className="cd related-title m-0 border-b-2 border-paper pb-4">
+          More from the drop
+        </h2>
+        <div className="mt-7 grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5">
+          {related.map((item) => (
+            <ProductCard key={item.slug} product={item} morph />
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }

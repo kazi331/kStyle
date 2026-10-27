@@ -3,7 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { ArrowIcon, CloseIcon } from "@/components/icons";
 import {
   deliveryCharge,
@@ -53,6 +61,38 @@ function readBag(): BagLine[] {
   }
 }
 
+const serverBag: BagLine[] = [];
+let bagLines: BagLine[] = serverBag;
+let bagLoaded = false;
+const bagListeners = new Set<() => void>();
+
+function subscribeBag(listener: () => void) {
+  bagListeners.add(listener);
+  return () => {
+    bagListeners.delete(listener);
+  };
+}
+
+function getBagSnapshot() {
+  if (!bagLoaded) {
+    bagLoaded = true;
+    bagLines = readBag();
+  }
+
+  return bagLines;
+}
+
+function getServerBagSnapshot() {
+  return serverBag;
+}
+
+function commitBag(next: BagLine[]) {
+  bagLines = next;
+  bagLoaded = true;
+  sessionStorage.setItem(bagKey, JSON.stringify(next));
+  bagListeners.forEach((listener) => listener());
+}
+
 function isBagLine(value: unknown): value is BagLine {
   if (!value || typeof value !== "object") return false;
 
@@ -68,41 +108,30 @@ function isBagLine(value: unknown): value is BagLine {
 }
 
 export function BagProvider({ children }: { children: React.ReactNode }) {
-  const [lines, setLines] = useState<BagLine[]>([]);
-  const [ready, setReady] = useState(false);
+  const lines = useSyncExternalStore(subscribeBag, getBagSnapshot, getServerBagSnapshot);
+  const ready = lines !== serverBag;
   const [open, setOpen] = useState(false);
   const [bump, setBump] = useState(0);
   const count = lines.reduce((total, line) => total + line.quantity, 0);
 
-  useEffect(() => {
-    setLines(readBag());
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    sessionStorage.setItem(bagKey, JSON.stringify(lines));
-  }, [lines, ready]);
-
   function add(item: BagItem) {
-    setLines((current) => {
-      const existing = current.find(
-        (line) => line.slug === item.slug && line.size === item.size,
-      );
+    const current = getBagSnapshot();
+    const existing = current.find((line) => line.slug === item.slug && line.size === item.size);
+    const next = existing
+      ? current.map((line) =>
+          line.slug === item.slug && line.size === item.size
+            ? { ...line, quantity: line.quantity + 1 }
+            : line,
+        )
+      : [...current, { ...item, quantity: 1 }];
 
-      if (!existing) return [...current, { ...item, quantity: 1 }];
-
-      return current.map((line) =>
-        line.slug === item.slug && line.size === item.size
-          ? { ...line, quantity: line.quantity + 1 }
-          : line,
-      );
-    });
+    commitBag(next);
     setBump((value) => value + 1);
   }
 
   function setQuantity(slug: string, size: string, quantity: number) {
-    setLines((current) =>
+    const current = getBagSnapshot();
+    commitBag(
       quantity < 1
         ? current.filter((line) => line.slug !== slug || line.size !== size)
         : current.map((line) =>
@@ -121,7 +150,7 @@ export function BagProvider({ children }: { children: React.ReactNode }) {
         lines,
         add,
         setQuantity,
-        clear: () => setLines([]),
+        clear: () => commitBag([]),
         show: () => setOpen(true),
         hide: () => setOpen(false),
       }}

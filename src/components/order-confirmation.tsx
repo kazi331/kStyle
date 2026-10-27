@@ -2,18 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { formatPrice } from "@/lib/catalog";
-import { readOrder, type PlacedOrder } from "@/lib/order";
+import { isOrderPending, readOrderSnapshot, readServerOrder, subscribeOrder } from "@/lib/order";
 
 export function OrderConfirmation() {
-  const [order, setOrder] = useState<PlacedOrder | null | undefined>(undefined);
+  const order = useSyncExternalStore(subscribeOrder, readOrderSnapshot, readServerOrder);
 
-  useEffect(() => {
-    setOrder(readOrder());
-  }, []);
-
-  if (order === undefined) return <div className="min-h-[70vh]" />;
+  if (isOrderPending(order)) return <div className="min-h-[70vh]" />;
 
   if (!order) {
     return (

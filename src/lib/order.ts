@@ -25,6 +25,14 @@ export type PlacedOrder = {
 };
 
 const orderKey = "kstyle-order";
+const orderPending = { pending: true } as const;
+const orderListeners = new Set<() => void>();
+
+let cachedRaw: string | null = null;
+let cachedOrder: PlacedOrder | null = null;
+let cached = false;
+
+export type StoredOrder = PlacedOrder | null | typeof orderPending;
 
 export function createOrderId() {
   return `KS-${Date.now().toString(36).toUpperCase().slice(-4)}`;
@@ -32,6 +40,33 @@ export function createOrderId() {
 
 export function saveOrder(order: PlacedOrder) {
   sessionStorage.setItem(orderKey, JSON.stringify(order));
+  cached = false;
+  orderListeners.forEach((listener) => listener());
+}
+
+export function subscribeOrder(listener: () => void) {
+  orderListeners.add(listener);
+  return () => {
+    orderListeners.delete(listener);
+  };
+}
+
+export function readOrderSnapshot(): StoredOrder {
+  const raw = sessionStorage.getItem(orderKey);
+  if (cached && raw === cachedRaw) return cachedOrder;
+
+  cachedRaw = raw;
+  cachedOrder = readOrder();
+  cached = true;
+  return cachedOrder;
+}
+
+export function readServerOrder(): StoredOrder {
+  return orderPending;
+}
+
+export function isOrderPending(order: StoredOrder): order is typeof orderPending {
+  return order === orderPending;
 }
 
 export function readOrder(): PlacedOrder | null {
