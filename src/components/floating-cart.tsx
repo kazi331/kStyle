@@ -102,9 +102,9 @@ export function FloatingCart() {
     >
       {/* Expanded cart popup */}
       <div
-        className={`absolute bottom-[calc(100%+12px)] right-0 w-[350px] origin-bottom overflow-hidden rounded-2xl border-2 border-ink bg-ink text-paper shadow-2xl transition-all duration-300 ${expanded
-            ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
-            : "pointer-events-none translate-y-4 scale-95 opacity-0"
+        className={`absolute bottom-[calc(100%+12px)] left-1/2 z-40 -translate-x-1/2  w-[350px] origin-bottom overflow-hidden rounded-2xl bg-ink text-paper shadow shadow-slate-600 transition-all duration-300 ${expanded
+          ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+          : "pointer-events-none translate-y-4 scale-95 opacity-0"
           }`}
       >
         {/* Header */}
@@ -172,7 +172,7 @@ export function FloatingCart() {
         ) : (
           <>
             {/* Items List */}
-            <div className="max-h-[250px] overflow-y-auto px-4 py-3">
+            <div className="max-h-[250px] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-accent px-4 py-3">
               {items.map((line) => (
                 <div
                   key={`${line.slug}-${line.size}`}
@@ -291,7 +291,7 @@ export function FloatingCart() {
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className={`floating-cart-bar relative flex cursor-pointer items-center gap-3 rounded-full border-2 border-ink bg-ink py-2 pr-2.5 pl-2.5 text-paper shadow-2xl transition-all duration-300 hover:scale-105 ${isPopping ? "cart-pop" : ""
+        className={`floating-cart-bar relative flex cursor-pointer items-center gap-3 rounded-full border-2 border-ink bg-ink py-2 pr-2.5 pl-2.5 text-paper shadow-slate-600 shadow-2xl transition-all duration-300 hover:scale-105 ${isPopping ? "cart-pop" : ""
           }`}
       >
         {/* Stacked thumbnails or cart icon if empty */}
