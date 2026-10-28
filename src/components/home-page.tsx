@@ -1,3 +1,4 @@
+import { ClothesCloset } from "@/components/clothes-closet/clothes-closet";
 import Footer from "@/components/Footer";
 import ByType from "@/components/home/ByType";
 import MadeFor from "@/components/home/MadeFor";
@@ -18,7 +19,6 @@ const accentTicker =
 
 const graphic = products[3];
 const textured = products[2];
-const stripe = products[0];
 
 export function HomePage() {
   return (
@@ -86,6 +86,11 @@ export function HomePage() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Clothes Closet Interactive Section */}
+        <section id="closet" className="border-t-2 border-ink">
+          <ClothesCloset products={products} showGridToggle={false} />
         </section>
 
         <Ticker

@@ -262,10 +262,10 @@
   animation: fadeIn 0.2s ease-out;
 }
 
-/* Floating cart bar entrance */
-@keyframes float-up {
+/* Floating cart bar entrance: only plays once on page load */
+@keyframes float-up-once {
   from {
-    transform: translateY(100px) scale(0.8);
+    transform: translateY(100px) scale(0.9);
     opacity: 0;
   }
   to {
@@ -274,8 +274,8 @@
   }
 }
 
-.floating-cart-bar {
-  animation: float-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+.floating-cart-initial-entrance {
+  animation: float-up-once 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* Pop / bounce when an item lands in the cart (like catching into a basket) */
@@ -343,3 +343,54 @@
     animation: none !important;
   }
 }
+
+/* Clothes Closet 3D & Transition Styles */
+.closet-rail-container {
+  perspective: 1200px;
+}
+
+.closet-rail-bar {
+  background: linear-gradient(
+    180deg,
+    #cfd3d6 0%,
+    #ffffff 28%,
+    #b8bcbf 65%,
+    #7d8286 100%
+  );
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.closet-rail-bracket {
+  background: radial-gradient(circle at 40% 40%, #ffffff 0%, #a8acaf 60%, #5a5d60 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.closet-garment-card {
+  transform-style: preserve-3d;
+  transform-origin: 50% 12px;
+  will-change: transform, filter, opacity;
+}
+
+.closet-flip-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.closet-face-front,
+.closet-face-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.closet-face-back {
+  transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .closet-garment-card,
+  .closet-flip-inner {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+

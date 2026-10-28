@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ProductCard } from "@/components/product-card";
+import { CollectionViewer } from "@/components/collection-viewer";
 import { SiteHeader } from "@/components/site-header";
 import {
   collectionProducts,
@@ -103,19 +103,7 @@ async function CollectionDetails({ params }: CollectionRouteProps) {
           </div>
         </section>
       ) : (
-        <section className="bg-ink px-4 py-12 text-paper min-[861px]:px-8 min-[861px]:py-[72px]">
-          <div
-            className={
-              items.length === 1
-                ? "grid w-full max-w-[320px] grid-cols-1"
-                : "grid grid-cols-2 gap-x-3.5 gap-y-8 min-[861px]:grid-cols-[repeat(auto-fit,minmax(240px,1fr))] min-[861px]:gap-5"
-            }
-          >
-            {items.map((product) => (
-              <ProductCard key={product.slug} product={product} numbered />
-            ))}
-          </div>
-        </section>
+        <CollectionViewer items={items} />
       )}
     </main>
   );

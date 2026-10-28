@@ -1,8 +1,9 @@
 "use client";
 
 /**
- * Throws a product image into the floating cart basket with a smooth parabolic arc,
- * and triggers a bounce/pop on the cart bar upon landing.
+ * Throws a product image into the floating cart basket with a smooth parabolic arc.
+ * Takes the full-size image of the product from its screen position and smoothly
+ * shrinks it down as it arcs and lands into the cart.
  */
 export function throwProductToCart({
   imageSrc,
@@ -24,44 +25,58 @@ export function throwProductToCart({
     targetY = cRect.top + cRect.height / 2;
   }
 
-  // Find origin: source element, or fallback to center screen
+  // Find origin & dimensions: capture full image size directly from source
+  let startW = 260;
+  let startH = 320;
   let startX = window.innerWidth / 2;
   let startY = window.innerHeight / 2;
+  let startLeft = startX - startW / 2;
+  let startTop = startY - startH / 2;
 
   if (sourceElement) {
     const sRect = sourceElement.getBoundingClientRect();
-    startX = sRect.left + sRect.width / 2;
-    startY = sRect.top + sRect.height / 2;
+    if (sRect.width > 50 && sRect.height > 50) {
+      startW = sRect.width;
+      startH = sRect.height;
+      startLeft = sRect.left;
+      startTop = sRect.top;
+      startX = sRect.left + sRect.width / 2;
+      startY = sRect.top + sRect.height / 2;
+    } else {
+      // Fallback if sourceElement is just a small button
+      startX = sRect.left + sRect.width / 2;
+      startY = sRect.top + sRect.height / 2;
+      startLeft = startX - startW / 2;
+      startTop = startY - startH / 2;
+    }
   }
 
   const dx = targetX - startX;
   const dy = targetY - startY;
 
-  // Starting size of the thrown item
-  const initialSize = 84;
-
+  // Create flying image starting at the EXACT full dimensions of the product
   const flyImg = document.createElement("img");
   flyImg.src = imageSrc;
   flyImg.alt = "";
   flyImg.style.cssText = `
     position: fixed;
-    left: ${startX - initialSize / 2}px;
-    top: ${startY - initialSize / 2}px;
-    width: ${initialSize}px;
-    height: ${initialSize}px;
+    left: ${startLeft}px;
+    top: ${startTop}px;
+    width: ${startW}px;
+    height: ${startH}px;
     object-fit: contain;
     pointer-events: none;
     z-index: 99999;
-    filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.45));
-    border-radius: 14px;
+    transform-origin: center center;
+    filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.4));
     will-change: transform, opacity;
   `;
   document.body.appendChild(flyImg);
 
-  const DURATION = 680; // ms
+  const DURATION = 780; // ms
 
   // Calculate high arc peak
-  const arcPeakY = -Math.max(100, Math.min(220, Math.abs(dx) * 0.25 + 80));
+  const arcPeakY = -Math.max(120, Math.min(260, Math.abs(dx) * 0.28 + 90));
 
   const animation = flyImg.animate(
     [
@@ -72,33 +87,33 @@ export function throwProductToCart({
       },
       {
         offset: 0.18,
-        transform: `translate3d(${dx * 0.14}px, ${arcPeakY * 0.75}px, 0) scale(1.15) rotate(-14deg)`,
+        transform: `translate3d(${dx * 0.15}px, ${arcPeakY * 0.75}px, 0) scale(0.92) rotate(-10deg)`,
         opacity: 1,
       },
       {
         offset: 0.42,
-        transform: `translate3d(${dx * 0.42}px, ${arcPeakY}px, 0) scale(0.95) rotate(-22deg)`,
+        transform: `translate3d(${dx * 0.42}px, ${arcPeakY}px, 0) scale(0.68) rotate(-18deg)`,
         opacity: 1,
       },
       {
         offset: 0.72,
-        transform: `translate3d(${dx * 0.75}px, ${dy * 0.45}px, 0) scale(0.65) rotate(-10deg)`,
+        transform: `translate3d(${dx * 0.75}px, ${dy * 0.42}px, 0) scale(0.40) rotate(-10deg)`,
         opacity: 0.95,
       },
       {
-        offset: 0.9,
-        transform: `translate3d(${dx * 0.94}px, ${dy * 0.88}px, 0) scale(0.3) rotate(-3deg)`,
+        offset: 0.92,
+        transform: `translate3d(${dx * 0.95}px, ${dy * 0.90}px, 0) scale(0.16) rotate(-3deg)`,
         opacity: 0.85,
       },
       {
         offset: 1,
-        transform: `translate3d(${dx}px, ${dy}px, 0) scale(0.04) rotate(0deg)`,
+        transform: `translate3d(${dx}px, ${dy}px, 0) scale(0.03) rotate(0deg)`,
         opacity: 0,
       },
     ],
     {
       duration: DURATION,
-      easing: "cubic-bezier(0.25, 0.9, 0.4, 1)",
+      easing: "cubic-bezier(0.25, 0.9, 0.35, 1)",
       fill: "forwards",
     },
   );
@@ -108,9 +123,8 @@ export function throwProductToCart({
     flyImg.remove();
   };
 
-  // Dispatch custom event so floating cart triggers pop bounce in sync
+  // Dispatch custom event so floating cart triggers pop bounce in sync with landing
   setTimeout(() => {
     window.dispatchEvent(new CustomEvent("kstyle:cart-item-landed"));
   }, DURATION - 90);
 }
-

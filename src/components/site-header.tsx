@@ -1,24 +1,21 @@
 "use client";
 
-import { useBag } from "@/components/bag";
 import { MenuIcon } from "@/components/icons";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const links = [
-  { href: "/#drop", label: "01 New in" },
-  { href: "/collections/winter", label: "02 Shop" },
-  { href: "/#about", label: "03 Brand" },
+  { href: "/#closet", label: "01 Closet" },
+  { href: "/#drop", label: "02 The Drop" },
+  { href: "/collections/winter", label: "03 Shop" },
+  { href: "/#about", label: "04 Brand" },
 ] as const;
 
 export function SiteHeader() {
-  const { count, bump, open: bagOpen, show: showBag, hide: hideBag } = useBag();
   const [open, setOpen] = useState(false);
   const [stuck, setStuck] = useState(false);
-  const [status, setStatus] = useState("");
   const sentinelRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
-  const bumpSeen = useRef(bump);
 
   useEffect(() => {
     if (!open) return;
@@ -60,13 +57,6 @@ export function SiteHeader() {
     };
   }, [open]);
 
-  useEffect(() => {
-    if (bump === bumpSeen.current) return;
-
-    bumpSeen.current = bump;
-    setStatus(`Added to bag, ${count} ${count === 1 ? "item" : "items"}`);
-  }, [bump, count]);
-
   return (
     <>
       <div ref={sentinelRef} aria-hidden="true" className="h-px -mb-px" />
@@ -103,29 +93,7 @@ export function SiteHeader() {
               </Link>
             ))}
           </nav>
-          <button
-            type="button"
-            className="flex min-h-11 cursor-pointer items-center gap-1.5 border-0 bg-ink px-3.5 text-xs font-bold tracking-[0.1em] text-paper uppercase min-[861px]:gap-2.5 min-[861px]:px-5 min-[861px]:text-[13px]"
-            aria-label={`Bag, ${count} ${count === 1 ? "item" : "items"}`}
-            aria-expanded={bagOpen}
-            aria-controls="bag"
-            onClick={() => (bagOpen ? hideBag() : showBag())}
-          >
-            Bag
-            <span className="relative inline-flex">
-              {bump > 0 ? <span key={bump} aria-hidden="true" className="bag-bubble" /> : null}
-              <span
-                key={`count-${bump}`}
-                className={`bg-accent px-[7px] py-px text-white min-[861px]:px-2 min-[861px]:py-0.5 ${bump > 0 ? "bag-pop" : ""}`}
-              >
-                {count}
-              </span>
-            </span>
-          </button>
         </header>
-        <p className="sr-only" aria-live="polite">
-          {status}
-        </p>
         {open ? (
           <nav
             id="mobile-nav"
