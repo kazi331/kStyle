@@ -3,6 +3,7 @@
 import { useBag } from "@/components/bag";
 import { ArrowIcon } from "@/components/icons";
 import { SizeGuide } from "@/components/size-guide";
+import { throwProductToCart } from "@/lib/throw-to-cart";
 import {
   formatPrice,
   galleryViews,
@@ -11,7 +12,7 @@ import {
   type Product,
 } from "@/lib/catalog";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function ProductPurchase({ product }: { product: Product }) {
   const { add } = useBag();
@@ -19,6 +20,7 @@ export function ProductPurchase({ product }: { product: Product }) {
   const [size, setSize] = useState<string>("M");
   const [guideOpen, setGuideOpen] = useState(false);
   const [addedTick, setAddedTick] = useState(0);
+  const mainImageRef = useRef<HTMLDivElement>(null);
   const added = addedTick > 0;
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export function ProductPurchase({ product }: { product: Product }) {
             </button>
           ))}
         </div>
-        <div className="relative order-1 overflow-hidden bg-mist min-[861px]:order-2">
+        <div ref={mainImageRef} className="relative order-1 overflow-hidden bg-mist min-[861px]:order-2">
           <div className="relative aspect-[4/5] overflow-hidden">
             <div
               className="absolute inset-0 transition-[scale, transform] duration-500"
@@ -155,9 +157,13 @@ export function ProductPurchase({ product }: { product: Product }) {
 
         <button
           type="button"
-          onClick={() => {
+          onClick={(e) => {
             add({ slug: product.slug, size });
             setAddedTick((tick) => tick + 1);
+            throwProductToCart({
+              imageSrc: product.image,
+              sourceElement: mainImageRef.current || e.currentTarget,
+            });
           }}
           className="mt-8 flex min-h-[60px] w-full cursor-pointer items-center justify-between border-0 bg-accent px-6 py-5 text-[15px] font-extrabold tracking-[0.14em] text-white uppercase"
         >

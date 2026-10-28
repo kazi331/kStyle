@@ -1,4 +1,5 @@
 import { BagProvider } from "@/components/bag";
+import { FloatingCart } from "@/components/floating-cart";
 import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
 import "./globals.css";
@@ -51,7 +52,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             }
           }
         `}</style>
-        <BagProvider>{children}</BagProvider>
+        <BagProvider>
+          {children}
+          <FloatingCart />
+        </BagProvider>
       </body>
     </html>
   );
