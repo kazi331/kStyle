@@ -1,6 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
 import { ViewTransition } from "react";
+import { AddToCartButton } from "@/components/add-to-cart-button";
 import { formatPrice, type Product } from "@/lib/catalog";
 
 export function ProductCard({
@@ -12,6 +16,8 @@ export function ProductCard({
   numbered?: boolean;
   morph?: boolean;
 }) {
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
   const photo = (
     <div className="absolute inset-0">
       <Image
@@ -28,34 +34,41 @@ export function ProductCard({
   );
 
   return (
-    <Link href={`/products/${product.slug}`} prefetch={true} className="group block">
-      <div className="relative aspect-[3/4] overflow-hidden bg-canvas">
-        {morph ? (
-          <ViewTransition
-            name={`product-${product.slug}`}
-            share="morph"
-            default="none"
-            exit="none"
-            update="none"
-          >
-            {photo}
-          </ViewTransition>
-        ) : (
-          photo
-        )}
-        {numbered ? (
-          <span
-            className={`cd pointer-events-none absolute top-1 left-2.5 text-[44px] min-[861px]:top-1.5 min-[861px]:left-3.5 min-[861px]:text-[56px] ${product.indexTone === "paper" ? "text-paper" : "text-ink"
-              }`}
-          >
-            {product.index}
-          </span>
-        ) : null}
-      </div>
+    <div className="group relative">
+      <Link href={`/products/${product.slug}`} prefetch={true} className="block">
+        <div ref={imageContainerRef} className="relative aspect-[3/4] overflow-hidden bg-canvas">
+          {morph ? (
+            <ViewTransition
+              name={`product-${product.slug}`}
+              share="morph"
+              default="none"
+              exit="none"
+              update="none"
+            >
+              {photo}
+            </ViewTransition>
+          ) : (
+            photo
+          )}
+          {numbered ? (
+            <span
+              className={`cd pointer-events-none absolute top-1 left-2.5 text-[44px] min-[861px]:top-1.5 min-[861px]:left-3.5 min-[861px]:text-[56px] ${product.indexTone === "paper" ? "text-paper" : "text-ink"
+                }`}
+            >
+              {product.index}
+            </span>
+          ) : null}
+        </div>
+      </Link>
       <div className="flex items-start justify-between gap-2 pt-3 text-[15px] font-bold min-[861px]:gap-3 min-[861px]:pt-3.5 min-[861px]:text-base">
-        <span className="min-w-0 flex-1">{product.name}</span>
-        <span className="shrink-0 text-steel">{formatPrice(product.price)}</span>
+        <Link href={`/products/${product.slug}`} prefetch={true} className="min-w-0 flex-1">
+          {product.name}
+        </Link>
+        <div className="flex shrink-0 items-center gap-2.5">
+          <span className="text-steel">{formatPrice(product.price)}</span>
+          <AddToCartButton product={product} imageRef={imageContainerRef} />
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }
