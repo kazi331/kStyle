@@ -1,8 +1,11 @@
 import { BagProvider } from "@/components/bag";
 import { FloatingCart } from "@/components/floating-cart";
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
+import { Archivo, Geist } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -25,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${archivo.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", archivo.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-full bg-canvas font-sans text-ink">
         <style href="view-transitions" precedence="default">{`

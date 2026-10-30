@@ -1,4 +1,5 @@
 import { Newsletter } from "@/components/newsletter"
+import { TextHoverEffect } from "@/components/ui/text-hover-effect"
 
 function Footer() {
     return (
@@ -14,7 +15,11 @@ function Footer() {
                 </div>
                 <Newsletter />
             </div>
-            <div className="cd wordmark stroke-wordmark mt-9 min-[861px]:mt-10">Kstyle</div>
+            {/* <div className="cd wordmark stroke-wordmark mt-9 min-[861px]:mt-10">Kstyle</div> */}
+
+            <div className="flex items-center justify-center">
+                <TextHoverEffect text="KSTYLE" />
+            </div>
         </footer>
     )
 }
